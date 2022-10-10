@@ -35,7 +35,7 @@ public class Monitor {
 
             // makes the working of program easier
             // to  understand
-            Thread.sleep(1000);
+//            Thread.sleep(1000);
 
         }
     }
@@ -59,7 +59,7 @@ public class Monitor {
             notify();
 
             // and sleep
-            Thread.sleep(1000);
+//            Thread.sleep(1000);
 
         }
     }
