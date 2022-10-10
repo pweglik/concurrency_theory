@@ -17,7 +17,6 @@ public class Main {
             incThread.join();
             decThread.join();
         }
-
         catch(Exception ex)
         {
             System.out.println("Exception has" +
