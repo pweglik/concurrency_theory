@@ -1,0 +1,10 @@
+NP MK WB
+
+W nie wpływa na zawieszenie. Zaden z obudzonych wątków nie jest producentem, a kolejka
+jest już pusta. W przypadku konumentów kolejka jest już pusta.
+
+Na prawdziwym monitorze mechanizm jest taki sam. Producent budzi producenta przy 
+pełnej kolejce i czekamy.
+
+9
+18

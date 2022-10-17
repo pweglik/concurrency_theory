@@ -6,7 +6,7 @@ import java.util.Queue;
 public class Monitor {
 
     private LinkedList<String> buffor = new LinkedList<>();
-    private int MAX_CAPACITY = 3;
+    private int MAX_CAPACITY = 2;
     private int counter = 0;
 
 
@@ -31,11 +31,7 @@ public class Monitor {
 
             // notifies the consumer thread that
             // now it can start consuming
-            notifyAll();
-
-            // makes the working of program easier
-            // to  understand
-//            Thread.sleep(1000);
+            notify();
 
         }
     }
@@ -56,10 +52,7 @@ public class Monitor {
             System.out.println("Consumer consumed message: " + message);
 
             // Wake up producer thread
-            notifyAll();
-
-            // and sleep
-//            Thread.sleep(1000);
+            notify();
 
         }
     }
