@@ -31,7 +31,7 @@ public class Monitor {
 
             // notifies the consumer thread that
             // now it can start consuming
-            notify();
+            notifyAll();
 
             // makes the working of program easier
             // to  understand
@@ -56,7 +56,7 @@ public class Monitor {
             System.out.println("Consumer consumed message: " + message);
 
             // Wake up producer thread
-            notify();
+            notifyAll();
 
             // and sleep
 //            Thread.sleep(1000);

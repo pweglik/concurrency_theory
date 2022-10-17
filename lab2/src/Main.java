@@ -21,11 +21,15 @@ public class Main {
 
         producerThread1.start();
         consumerThread1.start();
+        producerThread2.start();
+        consumerThread2.start();
 
         try
         {
             producerThread1.join();
             consumerThread1.join();
+            producerThread2.join();
+            consumerThread2.join();
         }
         catch(Exception ex)
         {
