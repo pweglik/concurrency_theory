@@ -7,15 +7,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Resource {
 
     private Stack<String> buffor = new Stack<>();
-    private int MAX_CAPACITY = 20;
+    private int MAX_CAPACITY = 7;
     private int counter = 0;
     ReentrantLock lock = new ReentrantLock();
     Condition stackEmptyCondition = lock.newCondition();
     Condition hasWaitingConsumersLock = lock.newCondition();
-    boolean hasWaitingConsumers = false;
     Condition stackFullCondition = lock.newCondition();
     Condition hasWaitingProducersLock = lock.newCondition();
-    boolean hasWaitingProducers = false;
+
 
     Resource() {
 
@@ -26,10 +25,9 @@ public class Resource {
         try {
             lock.lock();
 
-            while(hasWaitingProducers) {
+            while(lock.hasWaiters(hasWaitingProducersLock)) {
                 hasWaitingProducersLock.await();
             }
-            hasWaitingProducers = true;
 
             while(buffor.size() > MAX_CAPACITY - sizeOfPortion) {
                 stackFullCondition.await();
@@ -43,7 +41,6 @@ public class Resource {
             }
 
         } finally {
-            hasWaitingProducers = false;
             hasWaitingProducersLock.signal();
             stackEmptyCondition.signal();
             lock.unlock();
@@ -56,10 +53,9 @@ public class Resource {
         try {
             lock.lock();
 
-            while(hasWaitingConsumers) {
+            while(lock.hasWaiters(hasWaitingConsumersLock)) {
                 hasWaitingConsumersLock.await();
             }
-            hasWaitingConsumers = true;
 
             while(buffor.size() < sizeOfPortion) {
                 stackEmptyCondition.await();
@@ -70,7 +66,6 @@ public class Resource {
             }
 
         } finally {
-            hasWaitingConsumers = false;
             hasWaitingConsumersLock.signal();
             stackFullCondition.signal();
             lock.unlock();
