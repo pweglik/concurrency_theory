@@ -1,4 +1,3 @@
-import java.util.concurrent.ThreadLocalRandom;
 class Consumer extends Thread implements Runnable {
     private Thread t;
     private String threadName;
@@ -19,7 +18,7 @@ class Consumer extends Thread implements Runnable {
         while(true) {
             System.out.println("Step " +  threadName );
             try {
-                resource.popFromStack(consumeCount);
+                resource.consume(consumeCount);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

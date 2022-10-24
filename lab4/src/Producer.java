@@ -1,5 +1,3 @@
-
-import java.util.concurrent.ThreadLocalRandom;
 class Producer extends Thread implements Runnable {
     private Thread t;
     private String threadName;
@@ -20,7 +18,7 @@ class Producer extends Thread implements Runnable {
         while(true) {
             System.out.println("Step " +  threadName );
             try {
-                resource.pushToStack(produceCount);
+                resource.produce(produceCount);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
