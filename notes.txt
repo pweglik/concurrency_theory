@@ -1,10 +1,18 @@
-NP MK WB
+1. 
+jeden producent chce wyprodukować dużo, a reszte mało i się zagładza
 
-W nie wpływa na zawieszenie. Zaden z obudzonych wątków nie jest producentem, a kolejka
-jest już pusta. W przypadku konumentów kolejka jest już pusta.
+2.
+zagłodzenie - logujemy kiedy dany wątek ma dostep do monitora, bedzie widoczny brak zaglodzonego wątku
+można zliczać liczbę dostępów (na 2 cond zagładza, na 4 nie bo ktorys zawsze bedzie pierwszy 
+i poczekamy na jego kolej)
 
-Na prawdziwym monitorze mechanizm jest taki sam. Producent budzi producenta przy 
-pełnej kolejce i czekamy.
+3.
+mamy prawie pełen bufor, zwalniany jest producent, nie moze wyprodukować,
+zwalniamy konsumenta który chce skonsumować dużo, ale również nie może
 
-9
-18
+4.
+zagłodzenie - wychodzenie z monitora i utykanie w stanie ready to run, nie widzi 
+nikogo na first i trafiają sobie do czarnej dziury
+
+
+zakleszczenie - 
