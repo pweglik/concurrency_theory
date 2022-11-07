@@ -16,3 +16,7 @@ nikogo na first i trafiają sobie do czarnej dziury
 
 
 zakleszczenie - 
+
+
+ActiveOcject:
+obciążenie w monitorze (obiekcie współdzielonym) sprawia, że synchroniczne będzie niefektywne
