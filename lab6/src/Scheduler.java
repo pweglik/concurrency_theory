@@ -55,6 +55,7 @@ public class Scheduler extends Thread implements Runnable{
             waitingQueue.add(request);
         }
         else {
+            Computation.compute(5);
             request.call();
         }
 

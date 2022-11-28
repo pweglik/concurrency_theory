@@ -8,6 +8,7 @@ class Consumer extends Thread implements Runnable {
     private Proxy proxy;
 
     private Random generator = new Random(42);
+    int taskCounter = 0;
 
     Consumer(String name, Proxy proxy) {
         this.threadName = name;
@@ -19,18 +20,17 @@ class Consumer extends Thread implements Runnable {
         System.out.println("Running " +  threadName );
 
         while(true) {
-            System.out.println("Step " + threadName);
+//            System.out.println("Step " + threadName);
             try {
 
                 int consumeCount =  generator.nextInt(10) + 1;
 
                 Promise promise = this.proxy.pop(consumeCount);
 
-                while(!promise.isCompleted()){
-                    Thread.sleep(10);
+                while(!promise.isCompleted()) {
+                    Computation.compute(10);
+                    this.taskCounter++;
                 }
-
-                System.out.println("Consuming message: \n" + String.join("\n", promise.getMessages()));
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

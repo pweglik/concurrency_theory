@@ -17,7 +17,6 @@ public class Servant {
     }
 
     void push(String[] newMessages) {
-        System.out.println("Stack push! ");
         if(this.hasAtLeastNEmptySpace(newMessages.length))
             for(String message: newMessages) {
                 buffer.push(message);
@@ -28,7 +27,6 @@ public class Servant {
     }
 
     String[] pop(int numberOfMessagesToPop) {
-        System.out.println("Stack pop! ");
         String[] messages = new String[numberOfMessagesToPop];
         if(this.hasAtLeastNElements(numberOfMessagesToPop))
             for(int i = 0; i < numberOfMessagesToPop; i++) {

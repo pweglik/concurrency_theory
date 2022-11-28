@@ -4,6 +4,7 @@ class Producer extends Thread implements Runnable {
     public Thread thread;
     private String threadName;
     private Resource resource;
+    int taskCounter = 0;
 
     private Random generator = new Random(42);
 
@@ -20,8 +21,11 @@ class Producer extends Thread implements Runnable {
         while(true) {
 //            System.out.println("Step " +  threadName );
             try {
+                Computation.compute(10);
+                this.taskCounter++;
+
                 int produceCount = generator.nextInt(10) + 1;
-                resource.produce(produceCount);
+                resource.produce(produceCount, this.thread);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

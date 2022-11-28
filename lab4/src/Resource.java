@@ -8,9 +8,7 @@ public class Resource {
 
     private Stack<String> buffer = new Stack<>();
     private int MAX_CAPACITY = 20;
-
-    int prod_counter = 0;
-    int cons_counter = 0;
+    private int COST  = 50;
 
     ReentrantLock lock = new ReentrantLock();
     Condition stackEmptyCondition = lock.newCondition();
@@ -24,7 +22,7 @@ public class Resource {
 
     }
 
-    public void produce(int sizeOfPortion) throws InterruptedException
+    public void produce(int sizeOfPortion, Thread thread) throws InterruptedException
     {
         try {
             lock.lock();
@@ -38,9 +36,9 @@ public class Resource {
                 stackFullCondition.await();
             }
 
+            Computation.compute(COST);
             for(int i = 0; i < sizeOfPortion; i++) {
-                String message = "Będę inzynierem za " + Integer.toString(prod_counter) + " lat!";
-                prod_counter++;
+                String message = "Będę inzynierem!";
                 buffer.push(message);
 //                System.out.println("Message sent!");
             }
@@ -54,7 +52,7 @@ public class Resource {
     }
 
     // Function called by consumer thread
-    public void consume(int sizeOfPortion) throws InterruptedException
+    public void consume(int sizeOfPortion, Thread thread) throws InterruptedException
     {
         try {
             lock.lock();
@@ -68,9 +66,9 @@ public class Resource {
                 stackEmptyCondition.await();
             }
 
+            Computation.compute(COST);
             for(int i = 0; i < sizeOfPortion; i++) {
                 buffer.pop();
-                cons_counter++;
 //                System.out.println("Message received: " +  buffor.pop());
             }
 

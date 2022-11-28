@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {1}Opis Active Object}{2}{section.1}%
+\contentsline {section}{\numberline {2}Opis eksperymentu}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Metryki i pomiary}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Środowisko testowe}{2}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Hipoteza}{3}{section.3}%
+\contentsline {section}{\numberline {4}Wyniki}{3}{section.4}%
+\contentsline {section}{\numberline {5}Wnioski}{5}{section.5}%

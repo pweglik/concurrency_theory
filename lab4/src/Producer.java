@@ -4,6 +4,7 @@ class Consumer extends Thread implements Runnable {
     Thread thread;
     private String threadName;
     private Resource resource;
+    int taskCounter = 0;
 
     private Random generator = new Random(42);
 
@@ -19,8 +20,11 @@ class Consumer extends Thread implements Runnable {
         while(true) {
 //            System.out.println("Step " +  threadName );
             try {
+                Computation.compute(10);
+                this.taskCounter++;
+
                 int consumeCount =  generator.nextInt(10) + 1;
-                resource.consume(consumeCount);
+                resource.consume(consumeCount, this.thread);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

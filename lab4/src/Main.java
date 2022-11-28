@@ -5,16 +5,17 @@ import java.util.List;
 
 public class Main {
     private static final ThreadMXBean threadManager = ManagementFactory.getThreadMXBean();
+    private static int REPEATS = 1;
 
     public static void main(String[] args) throws InterruptedException {
-        int producersCount = 1;
-        int consumersCount = 1;
+        int totalResult = 0;
+        for(int l = 0; l < REPEATS; l ++) {
+            int producersCount = 2;
+            int consumersCount = 2;
 
-        double totalCpuTimes = 0;
-        double totalProduced = 0;
-
-        int repeats = 5;
-        for (int j = 0; j < repeats; j++) {
+            double totalCpuTimes = 0;
+            double totalProduced = 0;
+            int totalTasks = 0;
 
             Resource resource = new Resource();
             Producer[] producers = new Producer[producersCount];
@@ -51,36 +52,22 @@ public class Main {
 
             for (int i = 0; i < producersCount; i++) {
                 cpuTimes.add(threadManager.getThreadCpuTime(producers[i].thread.getId()));
+                totalTasks += producers[i].taskCounter;
                 producers[i].stop();
                 producers[i].thread.stop();
             }
             for (int i = 0; i < consumersCount; i++) {
                 cpuTimes.add(threadManager.getThreadCpuTime(consumers[i].thread.getId()));
+                totalTasks += consumers[i].taskCounter;
                 consumers[i].stop();
                 consumers[i].thread.stop();
             }
 
-            System.out.println("Total real time: ");
-            System.out.printf("%ds\n", time);
-            System.out.println("TNumber of threads: ");
-            System.out.printf("%d\n", producersCount + consumersCount);
-            System.out.println("Average CPU time per thread: ");
-            System.out.printf("%.3fs\n", (double) avg(cpuTimes) / 1000000000);
-            System.out.println("Total CPU time: ");
-            System.out.printf("%.3fs\n", (double) avg(cpuTimes) / 1000000000 * (producersCount + consumersCount));
-            System.out.print("\n");
-            System.out.printf("Total produced: %d\nTotal consumed: %d\n", resource.prod_counter, resource.cons_counter);
-
-            totalCpuTimes += avg(cpuTimes) / 1000000000 * (producersCount + consumersCount);
-            totalProduced += resource.prod_counter;
+//            System.out.printf("Total extra tasks: %d\n", totalTasks);
+            totalResult += totalTasks;
         }
+        System.out.printf("Total extra tasks averaged in %d runs: %d\n", REPEATS, totalResult / REPEATS);
 
-        System.out.println("Averaged total cpu time: ");
-        System.out.printf("%.3fs\n", totalCpuTimes / repeats);
-        System.out.println("Averaged total produced: ");
-        System.out.printf("%.3f\n", totalProduced / repeats);
-        System.out.println("Averaged total produced per CPU second");
-        System.out.printf("%.3f\n", (totalProduced / repeats)/(totalCpuTimes / repeats));
     }
 
     private static double avg(List <Long> cpuTimes) {
