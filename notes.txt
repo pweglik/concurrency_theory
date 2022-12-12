@@ -1,22 +1,32 @@
-1. 
-jeden producent chce wyprodukować dużo, a reszte mało i się zagładza
-
-2.
-zagłodzenie - logujemy kiedy dany wątek ma dostep do monitora, bedzie widoczny brak zaglodzonego wątku
-można zliczać liczbę dostępów (na 2 cond zagładza, na 4 nie bo ktorys zawsze bedzie pierwszy 
-i poczekamy na jego kolej)
-
-3.
-mamy prawie pełen bufor, zwalniany jest producent, nie moze wyprodukować,
-zwalniamy konsumenta który chce skonsumować dużo, ale również nie może
-
-4.
-zagłodzenie - wychodzenie z monitora i utykanie w stanie ready to run, nie widzi 
-nikogo na first i trafiają sobie do czarnej dziury
+Rozproszony buffor:
+używać 1-1, ale trzeba ogarniać 1-N i N-N.
 
 
-zakleszczenie - 
+Jak zaimplementować 1-1 Channel przy użyciu Monitora?
 
 
-ActiveOcject:
-obciążenie w monitorze (obiekcie współdzielonym) sprawia, że synchroniczne będzie niefektywne
+###################################
+Rozproszony buffor:
+Każdy klient(P, K) do każdego buffora 1-1.
+Każdy buffor ma 1-1 z Load Balanacerem (LD)
+
+Buffor raportuje do LD jak przekracza 80%, 
+ale nie częściej niż 10% objętości buffora.
+
+Klienci odpytują LD o dostępność bufforów.
+LD jest Active Objectem, nie blokuje ani zapytań klienów, ani raportów bufforów.
+
+Klient może czekać wybrany przez siebie czas na odpowiedź od LD,
+jak jej nie dostanie to próbuje zablkować losowy Buffor.
+
+Klient musi zablokować sobie buffor. Dopiero jak buffor odpowie mu pozytywnie to 
+Klient wysyła dane (produkuje, konsumuje)
+
+
+Zalety:
+    Zajebiśćie się balansuje 
+    nie obciążamy bufforów
+    mała szansa, że trafimy w pełen buffor jako klient
+
+Wady:
+    Klient wciąż może się zablkować (odpytywać klika bufforów pod rząd bez skutku)
