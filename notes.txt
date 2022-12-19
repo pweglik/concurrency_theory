@@ -8,15 +8,15 @@ Jak zaimplementować 1-1 Channel przy użyciu Monitora?
 ###################################
 Rozproszony buffor:
 Każdy klient(P, K) do każdego buffora 1-1.
-Każdy buffor ma 1-1 z Load Balanacerem (LD)
+Każdy buffor ma 1-1 z Load Balanacerem (LB)
 
-Buffor raportuje do LD jak przekracza 80%, 
+Buffor raportuje do LB jak przekracza 80%, 
 ale nie częściej niż 10% objętości buffora.
 
-Klienci odpytują LD o dostępność bufforów.
-LD jest Active Objectem, nie blokuje ani zapytań klienów, ani raportów bufforów.
+Klienci odpytują LB o dostępność bufforów.
+LB jest Active Objectem, nie blokuje ani zapytań klienów, ani raportów bufforów.
 
-Klient może czekać wybrany przez siebie czas na odpowiedź od LD,
+Klient może czekać wybrany przez siebie czas na odpowiedź od LB,
 jak jej nie dostanie to próbuje zablkować losowy Buffor.
 
 Klient musi zablokować sobie buffor. Dopiero jak buffor odpowie mu pozytywnie to 

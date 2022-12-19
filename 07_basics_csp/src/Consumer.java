@@ -1,24 +1,48 @@
 import org.jcsp.lang.CSProcess;
+import org.jcsp.lang.One2OneChannel;
 import org.jcsp.lang.One2OneChannelInt;
 
-public class Consumer implements CSProcess {
-    private One2OneChannelInt in;
-    private One2OneChannelInt req;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
-    public Consumer(final One2OneChannelInt req, final One2OneChannelInt in) {
-        this.req = req;
-        this.in = in;
+public class Consumer extends Client implements CSProcess {
+    public List<One2OneChannel> channelsToBuffers;
+    public List<One2OneChannel> channelsFromBuffers;
+    public One2OneChannel channelToLB;
+    private int id;
+
+    public Consumer(final List<One2OneChannel> channelsToBuffers,
+                    final List<One2OneChannel> channelsFromBuffers,
+                    One2OneChannel channelToLB,
+                    int id) {
+        this.channelsToBuffers = channelsToBuffers;
+        this.channelsFromBuffers = channelsFromBuffers;
+        this.channelToLB = channelToLB;
+        this.id = id;
+
     }
 
     public void run() {
-        int item;
-        while (true) {
-            req.out().write(0); // Request data - blocks until data is available
-            item = in.in().read();
-            if (item < 0)
-                break;
-            System.out.println(item);
+        System.out.printf("Start Consumer! \n");
+        while(true) {
+            int i = ThreadLocalRandom.current().nextInt(0, this.channelsToBuffers.size());
+
+            // Request access - blocks until data is available
+            this.channelsToBuffers.get(i).out().write(Request.REQUEST_CONSUME);
+            Request response = (Request) this.channelsFromBuffers.get(i).in().read();
+
+            if (response == Request.ACCEPT)
+            {
+                this.channelsToBuffers.get(i).out().write(Request.CONSUME);
+            }
         }
-        System.out.println("Consumer ended.");
+    }
+
+    public List<One2OneChannel> getChannelsToBuffer() {
+        return this.channelsToBuffers;
+    }
+
+    public List<One2OneChannel> getChannelsFromBuffer() {
+        return this.channelsFromBuffers;
     }
 }

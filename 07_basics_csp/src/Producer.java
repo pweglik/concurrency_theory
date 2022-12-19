@@ -1,22 +1,46 @@
 import org.jcsp.lang.CSProcess;
+import org.jcsp.lang.One2OneChannel;
 import org.jcsp.lang.One2OneChannelInt;
 
-public class Producer implements CSProcess {
-    private One2OneChannelInt channel;
-    private int start;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
-    public Producer(final One2OneChannelInt out, int start) {
-        channel = out;
-        this.start = start;
+public class Producer extends Client implements CSProcess {
+    public List<One2OneChannel> channelsToBuffers;
+    public List<One2OneChannel> channelsFromBuffers;
+    public One2OneChannel channelToLB;
+    private int id;
+
+    public Producer(final List<One2OneChannel> channelsToBuffers,
+                    final List<One2OneChannel> channelsFromBuffers,
+                    One2OneChannel channelToLB,
+                    int id) {
+        this.channelsToBuffers = channelsToBuffers;
+        this.channelsFromBuffers = channelsFromBuffers;
+        this.channelToLB = channelToLB;
+        this.id = id;
     }
 
     public void run() {
-        int item;
-        for (int k = 0; k < 100; k++) {
-            item = (int) (Math.random() * 100) + 1 + start;
-            channel.out().write(item);
+        System.out.printf("Start Producer! \n");
+        while(true) {
+            int i = ThreadLocalRandom.current().nextInt(0, this.channelsToBuffers.size());
+            // Request data - blocks until data is available
+            this.channelsToBuffers.get(i).out().write(Request.REQUEST_PRODUCE);
+            Request response = (Request) this.channelsFromBuffers.get(i).in().read();
+
+            if (response == Request.ACCEPT)
+            {
+                this.channelsToBuffers.get(i).out().write(Request.PRODUCE);
+            }
         }
-        channel.out().write(-1);
-        System.out.println("Producer" + start + " ended.");
+    }
+
+    public List<One2OneChannel> getChannelsToBuffer() {
+        return this.channelsToBuffers;
+    }
+
+    public List<One2OneChannel> getChannelsFromBuffer() {
+        return this.channelsFromBuffers;
     }
 }

@@ -1,66 +1,72 @@
-import org.jcsp.lang.Alternative;
-import org.jcsp.lang.CSProcess;
-import org.jcsp.lang.Guard;
-import org.jcsp.lang.One2OneChannelInt;
+import org.jcsp.lang.*;
+
+import java.util.List;
 
 /**
  * Buffer class: Manages communication between Producer2
  * and Consumer2 classes.
  */
 public class Buffer implements CSProcess {
-    private One2OneChannelInt[] in; // Input from Producer
-    private One2OneChannelInt[] req; // Request for data from Consumer
-    private One2OneChannelInt[] out; // Output to Consumer
+    public List<One2OneChannel> channelsToClients;
+    public List<One2OneChannel> channelsFromClients;
     // The buffer itself
-    private int[] buffer = new int[10];
-    // Subscripts for buffer
-    int hd = -1;
-    int tl = -1;
+    private int size;
+    private int bufferValue;
+    private int id;
 
-    public Buffer(final One2OneChannelInt[] in, final
-    One2OneChannelInt[] req, final One2OneChannelInt[] out) {
-        this.in = in;
-        this.req = req;
-        this.out = out;
-    } // constructor
+
+    public Buffer(List<One2OneChannel> channelsToBuffer,
+           List<One2OneChannel> channelsFromBuffer,
+           int size,
+           int id) {
+        this.channelsToClients = channelsFromBuffer;
+        this.channelsFromClients = channelsToBuffer;
+        this.size = size;
+        this.bufferValue = 0;
+        this.id = id;
+    }
 
     public void run() {
-        final Guard[] guards = {in[0].in(), in[1].in(), req[0].in(), req[1].in()};
+        final Guard[] guards = new Guard[this.channelsFromClients.size()];
+
+        for(int i = 0 ; i < this.channelsFromClients.size() ; i++) {
+            guards[i] = channelsFromClients.get(i).in();
+        }
+
         final Alternative alt = new Alternative(guards);
-        int countdown = 4; // Number of processes running
-        while (countdown > 0) {
-            int index = alt.select();
-            switch (index) {
-                case 0:
-                case 1: // A Producer is ready to send
-                    if (hd < tl + 11) // Space available
-                    {
-                        int item = in[index].in().read();
-                        if (item < 0)
-                            countdown--;
-                        else {
-                            hd++;
-                            buffer[hd % buffer.length] = item;
+
+        while(true) {
+            int index = alt.fairSelect();
+            Request req = (Request) channelsFromClients.get(index).in().read();
+            switch(req)  {
+                case REQUEST_CONSUME:
+                    if (bufferValue > 0) {
+                        channelsToClients.get(index).out().write(Request.ACCEPT);
+                        // consuming CONSUME
+                        Request reqCons = (Request) channelsFromClients.get(index).in().read();
+                        if(reqCons == Request.CONSUME) {
+                            bufferValue--;
                         }
                     }
+                    else {
+                        channelsToClients.get(index).out().write(Request.REJECT);
+                    }
                     break;
-                case 2:
-                case 3: // A Consumer is ready to read
-                    if (tl < hd) // Item(s) available
-                    {
-                        req[index - 2].in().read(); // Read and discard request
-                        tl++;
-                        int item = buffer[tl % buffer.length];
-                        out[index - 2].out().write(item);
-                    } else if (countdown <= 2) // Signal consumer to end
-                    {
-                        req[index - 2].in().read(); // Read and discard request
-                        out[index - 2].out().write(-1); // Signal end
-                        countdown--;
+                case REQUEST_PRODUCE:
+                    if (bufferValue < size) {
+                        channelsToClients.get(index).out().write(Request.ACCEPT);
+                        // consuming CONSUME
+                        Request reqProd = (Request) channelsFromClients.get(index).in().read();
+                        if(reqProd == Request.PRODUCE) {
+                            bufferValue++;
+                        }
+                    }
+                    else {
+                        channelsToClients.get(index).out().write(Request.REJECT);
                     }
                     break;
             }
+            System.out.printf("Buffer %d full in %.2f percent \n", this.id, ((float) bufferValue / size * 100));
         }
-        System.out.println("Buffer ended.");
     }
 }
