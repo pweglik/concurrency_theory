@@ -5,8 +5,8 @@ import java.util.List;
 
 public final class Main {
     public static void main(String[] args) {
-        int NUMBER_OF_PRODUCERS = 20;
-        int NUMBER_OF_CONSUMERS = 10;
+        int NUMBER_OF_PRODUCERS = 1;
+        int NUMBER_OF_CONSUMERS = 1;
         int NUMBER_OF_BUFFERS = 4;
         int BUFFER_SIZE = 10;
 
